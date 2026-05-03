@@ -128,3 +128,8 @@ This tool is developed for **educational purposes** and **authorized security au
 The use of **Droidoor** against targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state, and federal laws. The author assumes no liability and is not responsible for any misuse or damage caused by this program.
 
 By using this software, you agree to the terms of this license.
+
+---
+
+**Author:** [lycan-hunter](https://github.com/lycan-hunter)  
+**Project Home:** [droidoor](https://github.com/lycan-hunter/droidoor)
